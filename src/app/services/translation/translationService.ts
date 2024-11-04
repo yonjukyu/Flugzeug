@@ -1,7 +1,7 @@
 // src/services/TranslationService.ts
 import path from "path";
 import fs from "fs";
-import PDFParser from "pdf-parse";
+import pdf from 'pdf-parse'
 import axios from "axios";
 import PDFDocument from "pdfkit";
 
@@ -82,7 +82,7 @@ export class TranslationService {
 
     private async parsePDF(filePath: string): Promise<string> {
         const dataBuffer = fs.readFileSync(filePath);
-        const data = await PDFParser(dataBuffer);
+        const data = await pdf(dataBuffer);
         return data.text;
     }
 
