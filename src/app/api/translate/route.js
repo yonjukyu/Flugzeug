@@ -1,170 +1,109 @@
 // app/api/translate/route.js
 import { NextResponse } from 'next/server';
-import axios from 'axios';
-import { BlobServiceClient } from '@azure/storage-blob';
 
-// URL de l'API Azure Document Translation fournie par votre collègue
-const AZURE_TRANSLATOR_ENDPOINT = 'https://flugzeug.cognitiveservices.azure.com/';
-const DOCUMENT_TRANSLATION_URL = `${AZURE_TRANSLATOR_ENDPOINT}translator/document/batches?api-version=2024-05-01`;
+// Endpoint Azure Document Translator
+const TRANSLATOR_ENDPOINT = 'https://flugzeug.cognitiveservices.azure.com/translator/document/batches';
+const API_VERSION = '2024-05-01';
+const API_KEY = process.env.AZURE_TRANSLATOR_API_KEY || 'BfzPONiC74w3ozmFxqg7OnEqtaCi7XOvHv1vJUQRuivkJPgYfZQOJQQJ99BEAC5T7U2XJ3w3AAAbACOGsDqg';
+
+// SAS URLs pour le stockage (à mettre dans des variables d'environnement en production)
+const SOURCE_CONTAINER_SAS = 'https://flugzeug.blob.core.windows.net/document-storage?sp=racwdli&st=2025-05-13T15:31:38Z&se=2026-07-28T23:31:38Z&spr=https&sv=2024-11-04&sr=c&sig=W9TM9MWVChtNQRbQqTFvBDyEZ8Qx1req0zh%2BRxWh%2FKw%3D';
+const TARGET_CONTAINER_SAS = 'https://flugzeug.blob.core.windows.net/translated-documents-storage?sp=racwdli&st=2025-05-13T15:32:13Z&se=2026-08-05T23:32:13Z&spr=https&sv=2024-11-04&sr=c&sig=1OZh81I45bXb0K3A1t%2F6X2rJGAxErSjFEQpT%2F3KZdao%3D';
 
 export async function POST(request) {
   try {
-    // Traiter la requête multipart/form-data
-    const formData = await request.formData();
-    const file = formData.get('document');
-    
-    if (!file) {
+    const { filename } = await request.json();
+
+    if (!filename) {
       return NextResponse.json(
-        { error: 'Aucun document fourni' },
+        { error: 'Filename is required' },
         { status: 400 }
       );
     }
 
-    // Récupérer les options de traduction
-    const sourceLanguage = formData.get('sourceLanguage') || 'auto';
-    const targetLanguage = formData.get('targetLanguage') || 'fr';
-    
-    // Récupérer la clé API
-    const translatorKey = process.env.AZURE_TRANSLATOR_KEY;
-    const azureRegion = process.env.AZURE_TRANSLATOR_REGION;
-    if (!translatorKey) {
-      return NextResponse.json(
-        { error: 'Clé API Azure Translator non configurée' },
-        { status: 500 }
-      );
-    }
-    
-    // Récupérer la chaîne de connexion au stockage Azure
-    const storageConnectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
-    if (!storageConnectionString) {
-      return NextResponse.json(
-        { error: 'Chaîne de connexion au stockage Azure non configurée' },
-        { status: 500 }
-      );
-    }
-
-    // Créer un client de service Blob
-    const blobServiceClient = BlobServiceClient.fromConnectionString(storageConnectionString);
-
-    // Créer ou récupérer les conteneurs source et cible
-    const sourceContainerName = 'source-documents';
-    const targetContainerName = 'translated-documents';
-    
-    const sourceContainerClient = blobServiceClient.getContainerClient(sourceContainerName);
-    const targetContainerClient = blobServiceClient.getContainerClient(targetContainerName);
-
-    // Assurer que les conteneurs existent
-    await sourceContainerClient.createIfNotExists({ access: 'blob' });
-    await targetContainerClient.createIfNotExists({ access: 'blob' });
-
-    // Générer des noms uniques pour les blobs
-    const timestamp = new Date().getTime();
-    const originalFileName = file.name;
-    const fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.'));
-    const fileNameWithoutExt = originalFileName.substring(0, originalFileName.lastIndexOf('.'));
-    
-    const sourceBlobName = `${fileNameWithoutExt}-${timestamp}${fileExtension}`;
-    const targetBlobName = `${fileNameWithoutExt}-${targetLanguage}-${timestamp}${fileExtension}`;
-
-    // Obtenir les bytes du fichier
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    // Télécharger le fichier source vers le conteneur source
-    const blockBlobClient = sourceContainerClient.getBlockBlobClient(sourceBlobName);
-    await blockBlobClient.upload(buffer, buffer.length);
-
-    // Obtenir les SAS URIs pour les conteneurs source et cible
-    const sourceSasUrl = await generateSasUrl(sourceContainerClient);
-    const targetSasUrl = await generateSasUrl(targetContainerClient);
-
-    // Préparer la requête pour lancer la traduction du document
-    const translationInput = {
+    // Préparation du corps de la requête pour l'API de traduction
+    const requestBody = {
       inputs: [
         {
           source: {
-            sourceUrl: `${sourceSasUrl}/${sourceBlobName}`,
-            storageSource: 'AzureBlob',
-            language: sourceLanguage === 'auto' ? null : sourceLanguage
+            sourceUrl: SOURCE_CONTAINER_SAS,
+            filter: {
+              prefix: filename
+            },
+            storageSource: 'AzureBlob'
           },
           targets: [
             {
-              targetUrl: `${targetSasUrl}/${targetBlobName}`,
-              storageSource: 'AzureBlob',
-              language: targetLanguage
+              targetUrl: TARGET_CONTAINER_SAS,
+              language: 'en'
             }
           ]
         }
       ]
     };
 
-    // Utiliser l'URL spécifique fournie par votre collègue avec authentification par clé
-    const translationResponse = await axios({
-      method: 'post',
-      url: DOCUMENT_TRANSLATION_URL,
-      headers: {
-        'Ocp-Apim-Subscription-Key': translatorKey,
-        'Ocp-Apim-Subscription-Region': azureRegion,
-        'Content-Type': 'application/json'
-      },
-      data: translationInput
-    });
+    // Envoi de la requête à l'API Azure Document Translator
+    const translationResponse = await fetch(
+      `${TRANSLATOR_ENDPOINT}?api-version=${API_VERSION}`,
+      {
+        method: 'POST',
+        headers: {
+          'Ocp-Apim-Subscription-Key': API_KEY,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      }
+    );
 
-// Récupérer correctement l'ID de l'opération de traduction
-// Il peut être dans les en-têtes ou dans le corps de la réponse
-let operationId = translationResponse.headers['operation-location'];
+    if (!translationResponse.ok) {
+      const errorData = await translationResponse.json();
+      throw new Error(`Translation API error: ${JSON.stringify(errorData)}`);
+    }
 
-// Journaliser les informations pour débogage
-console.log('Headers de réponse:', translationResponse.headers);
-console.log('Operation-Location header:', operationId);
-console.log('Données de réponse:', translationResponse.data);
+    // L'API retourne l'ID du job de traduction
+    const translationData = await translationResponse.json();
+    
+    // Récupération du statut et des détails de la traduction
+    // Note: Dans un cas réel, vous utiliseriez un webhook ou un polling
+    // pour vérifier l'état de la traduction qui peut prendre du temps
+    
+    // Pour l'exemple, on va récupérer directement les résultats
+    // En production, vous devriez utiliser l'endpoint GET pour vérifier l'état
+    const statusResponse = await fetch(
+      `${TRANSLATOR_ENDPOINT}/${translationData.id}?api-version=${API_VERSION}`,
+      {
+        headers: {
+          'Ocp-Apim-Subscription-Key': API_KEY
+        }
+      }
+    );
 
-// S'il n'est pas dans les en-têtes, cherchez-le dans la réponse
-if (!operationId && translationResponse.data && translationResponse.data.id) {
-  operationId = translationResponse.data.id;
-}
+    if (!statusResponse.ok) {
+      throw new Error('Failed to get translation status');
+    }
 
-if (!operationId) {
-  return NextResponse.json(
-    { error: 'Impossible de récupérer l\'identifiant de l\'opération de traduction' },
-    { status: 500 }
-  );
-}
+    const statusData = await statusResponse.json();
 
-// Retourner l'ID de l'opération ainsi que les autres infos nécessaires
-return NextResponse.json({
-  message: 'Traduction lancée avec succès',
-  operationId, // Assurez-vous que c'est une URL complète que l'API check-translation peut appeler
-  sourceBlobName,
-  targetBlobName,
-  containerName: targetContainerName
-}, { status: 202 });
+    // Construction de l'URL du document traduit
+    const translatedDocumentName = `${filename.split('.')[0]}_en.${filename.split('.')[1]}`;
+    const translatedUrl = `${TARGET_CONTAINER_SAS}&prefix=${translatedDocumentName}`;
 
-  } catch (error) {
-    console.error('Erreur lors de la traduction:', error);
     return NextResponse.json({
-      error: 'Erreur lors de la traduction du document',
-      details: error.message
-    }, { status: 500 });
-  }
-}
-
-// Fonction simple pour générer un URL SAS pour un conteneur
-async function generateSasUrl(containerClient) {
-  try {
-    // Créer une date d'expiration (1 heure dans le futur)
-    const expiresOn = new Date();
-    expiresOn.setHours(expiresOn.getHours() + 1);
-    
-    // Générer l'URL SAS avec les permissions de lecture, écriture et liste
-    const sasUrl = await containerClient.generateSasUrl({
-      permissions: "rwl", // read, write, list
-      expiresOn: expiresOn
+      success: true,
+      batchId: translationData.id,
+      status: statusData.status,
+      results: [
+        {
+          status: 'Succeeded', // Simulé pour l'exemple
+          translatedUrl: translatedUrl
+        }
+      ]
     });
-    
-    return sasUrl;
   } catch (error) {
-    console.error("Erreur lors de la génération du SAS:", error);
-    throw error;
+    console.error('Translation error:', error);
+    return NextResponse.json(
+      { error: 'Failed to translate document', details: error.message },
+      { status: 500 }
+    );
   }
 }
