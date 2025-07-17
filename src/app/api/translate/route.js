@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 // Endpoint Azure Document Translator
 const TRANSLATOR_ENDPOINT = 'https://flugzeug.cognitiveservices.azure.com/translator/document/batches';
 const API_VERSION = '2024-05-01';
-const API_KEY = process.env.AZURE_TRANSLATION_KEY || 'BfzPONiC74w3ozmFxqg7OnEqtaCi7XOvHv1vJUQRuivkJPgYfZQOJQQJ99BEAC5T7U2XJ3w3AAAbACOGsDqg';
+const API_KEY = process.env.AZURE_TRANSLATION_KEY;
 
 // SAS URLs pour le stockage (à mettre dans des variables d'environnement en production)
 const SOURCE_CONTAINER_SAS = "https://flugzeug.blob.core.windows.net/document-storage?sp=racwdli&st=2025-07-17T17:49:20Z&se=2026-07-17T02:04:20Z&spr=https&sv=2024-11-04&sr=c&sig=adGTgL7tOiRtNSclJ5StwFxhy9%2Bz5227dZQ7i2oI2vI%3D";
