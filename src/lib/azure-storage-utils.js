@@ -1,9 +1,8 @@
 // lib/azure-storage-utils.js
-import { 
-  BlobServiceClient, 
-  StorageSharedKeyCredential, 
-  BlobSASPermissions, 
-  generateBlobSASQueryParameters 
+import {
+  BlobSASPermissions,
+  generateBlobSASQueryParameters,
+  StorageSharedKeyCredential
 } from "@azure/storage-blob";
 
 /**
