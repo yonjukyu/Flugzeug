@@ -7,12 +7,12 @@ const API_VERSION = '2024-05-01';
 const API_KEY = process.env.AZURE_TRANSLATION_KEY || 'BfzPONiC74w3ozmFxqg7OnEqtaCi7XOvHv1vJUQRuivkJPgYfZQOJQQJ99BEAC5T7U2XJ3w3AAAbACOGsDqg';
 
 // SAS URLs pour le stockage (à mettre dans des variables d'environnement en production)
-const SOURCE_CONTAINER_SAS = 'https://flugzeug.blob.core.windows.net/document-storage?sp=racwdli&st=2025-05-13T15:31:38Z&se=2026-07-28T23:31:38Z&spr=https&sv=2024-11-04&sr=c&sig=W9TM9MWVChtNQRbQqTFvBDyEZ8Qx1req0zh%2BRxWh%2FKw%3D';
-const TARGET_CONTAINER_SAS = 'https://flugzeug.blob.core.windows.net/translated-documents-storage?sp=racwdli&st=2025-05-13T15:32:13Z&se=2026-08-05T23:32:13Z&spr=https&sv=2024-11-04&sr=c&sig=1OZh81I45bXb0K3A1t%2F6X2rJGAxErSjFEQpT%2F3KZdao%3D';
+const SOURCE_CONTAINER_SAS = "https://flugzeug.blob.core.windows.net/document-storage?sp=racwdli&st=2025-07-17T17:49:20Z&se=2026-07-17T02:04:20Z&spr=https&sv=2024-11-04&sr=c&sig=adGTgL7tOiRtNSclJ5StwFxhy9%2Bz5227dZQ7i2oI2vI%3D";
+const TARGET_CONTAINER_SAS = "https://flugzeug.blob.core.windows.net/translated-documents-storage?sp=racwdli&st=2025-07-17T17:51:43Z&se=2026-07-17T02:06:43Z&spr=https&sv=2024-11-04&sr=c&sig=qklNLaU6MdyLNnfdcNs2tlEpuRVdmUzWBwu23XEJvos%3D";
 
 export async function POST(request) {
   try {
-    const { filename } = await request.json();
+    const { filename, targetLanguage } = await request.json();
 
     if (!filename) {
       return NextResponse.json(
@@ -35,7 +35,7 @@ export async function POST(request) {
           targets: [
             {
               targetUrl: TARGET_CONTAINER_SAS,
-              language: 'en'
+              language: targetLanguage || 'en',
             }
           ]
         }
@@ -85,8 +85,7 @@ export async function POST(request) {
     const statusData = await statusResponse.json();
 
     // Construction de l'URL du document traduit
-    const translatedDocumentName = `${filename.split('.')[0]}_en.${filename.split('.')[1]}`;
-    const translatedUrl = `${TARGET_CONTAINER_SAS}&prefix=${translatedDocumentName}`;
+    const translatedUrl = `https://flugzeug.blob.core.windows.net/translated-documents-storage/${filename}?sp=racwdli&st=2025-07-17T17:51:43Z&se=2026-07-17T02:06:43Z&spr=https&sv=2024-11-04&sr=c&sig=qklNLaU6MdyLNnfdcNs2tlEpuRVdmUzWBwu23XEJvos%3D`;
 
     return NextResponse.json({
       success: true,

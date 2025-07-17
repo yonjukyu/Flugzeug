@@ -1,6 +1,3 @@
-// Améliorations du composant TranslateForm
-// components/TranslateForm.js
-'use client';
 import { useState } from 'react';
 
 export default function TranslateForm() {
@@ -10,8 +7,23 @@ export default function TranslateForm() {
   const [status, setStatus] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [targetLanguage, setTargetLanguage] = useState('en');
 
-  const handleFileChange = (e) => {
+  const languages = [
+    { code: 'fr', name: 'Français' },
+    { code: 'en', name: 'Anglais' },
+    { code: 'es', name: 'Espagnol' },
+    { code: 'de', name: 'Allemand' },
+    { code: 'it', name: 'Italien' },
+    { code: 'pt', name: 'Portugais' },
+    { code: 'ar', name: 'Arabe' },
+    { code: 'zh', name: 'Chinois' },
+    { code: 'ja', name: 'Japonais' },
+    { code: 'ko', name: 'Coréen' },
+    { code: 'ru', name: 'Russe' }
+  ];
+
+ const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setFile(selectedFile);
@@ -30,7 +42,8 @@ export default function TranslateForm() {
     
     try {
       const formData = new FormData();
-      formData.append('file', file);
+      const newFile = new File([file], `${file.name.split('.')[0]}_${targetLanguage}.${file.name.split('.')[1]}`, { type: file.type });
+      formData.append('file', newFile);
 
       const res = await fetch('/api/upload', {
         method: 'POST',
@@ -43,6 +56,7 @@ export default function TranslateForm() {
       }
 
       const data = await res.json();
+      console.log('Upload response:', data);
       setFilename(data.filename);
       setStatus('✅ Fichier téléchargé avec succès');
     } catch (error) {
@@ -62,12 +76,12 @@ export default function TranslateForm() {
     setIsLoading(true);
     setError('');
     setStatus('🔄 Traduction en cours...');
-    
+
     try {
       const res = await fetch('/api/translate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filename }),
+        body: JSON.stringify({ filename, targetLanguage }),
       });
 
       if (!res.ok) {
@@ -76,7 +90,8 @@ export default function TranslateForm() {
       }
 
       const data = await res.json();
-      
+      console.log('Translation response:', data);
+
       if (data.success) {
         setStatus('✅ Traduction terminée');
         const translated = data.results.find(doc => doc.status === 'Succeeded');
@@ -98,13 +113,28 @@ export default function TranslateForm() {
 
   return (
     <div className="space-y-6">
+      {/* Nouveau sélecteur de langue */}
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-700">
+          Langue de traduction
+        </label>
+        <select
+          value={targetLanguage}
+          onChange={(e) => setTargetLanguage(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        >
+          {languages.map((lang) => (
+            <option key={lang.code} value={lang.code}>
+              {lang.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div className="grid md:grid-cols-2 gap-6">
         {/* Section Upload */}
         <div className="space-y-4">
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Sélectionner un document
-            </label>
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
               <input 
                 type="file" 
@@ -116,12 +146,9 @@ export default function TranslateForm() {
                           file:bg-blue-50 file:text-blue-700
                           hover:file:bg-blue-100"
               />
-              <p className="mt-2 text-sm text-gray-500">
-                Formats supportés: Word, PDF, TXT, etc.
-              </p>
             </div>
           </div>
-          
+
           <button
             onClick={handleUpload}
             disabled={isLoading || !file}
@@ -129,17 +156,16 @@ export default function TranslateForm() {
                       disabled:bg-gray-300 disabled:cursor-not-allowed
                       flex items-center justify-center font-medium transition-colors`}
           >
-            {isLoading ? 
-              <span className="inline-block h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span> : 
-              null
-            }
+            {isLoading && (
+              <span className="inline-block h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
+            )}
             Télécharger le document
           </button>
         </div>
 
         {/* Section Traduction */}
         <div className="space-y-4">
-          <div className="p-4 bg-gray-50 rounded-lg">
+          <div className="m-1 p-4 bg-gray-50 rounded-lg">
             <h3 className="font-medium text-gray-800 mb-2">État du traitement</h3>
             {!filename && (
               <p className="text-sm text-gray-500">En attente d'un document...</p>
@@ -153,9 +179,9 @@ export default function TranslateForm() {
           <button
             onClick={handleTranslate}
             disabled={isLoading || !filename}
-            className={`w-full bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 
+            className="w-full bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 
                       disabled:bg-gray-300 disabled:cursor-not-allowed
-                      flex items-center justify-center font-medium transition-colors`}
+                      flex items-center justify-center font-medium transition-colors"
           >
             {isLoading ? 
               <span className="inline-block h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span> : 

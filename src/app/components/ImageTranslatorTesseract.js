@@ -1,6 +1,6 @@
 'use client';
-import { useState, useRef } from 'react';
-import { Camera, Upload, RefreshCw, Copy, Download, Eye, EyeOff } from 'lucide-react';
+import { Camera, Copy, Download, Eye, EyeOff, RefreshCw, Upload } from 'lucide-react';
+import { useRef, useState } from 'react';
 import { createWorker } from 'tesseract.js';
 
 export default function ImageTranslatorTesseract() {
@@ -237,7 +237,7 @@ export default function ImageTranslatorTesseract() {
           Extraction de texte et traduction directement dans votre navigateur
         </p>
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-700">
-          <p className="font-medium">🚀 Avantages de cette solution :</p>
+          <p className="flex font-medium">🚀 Avantages de cette solution :</p>
           <ul className="mt-1 text-left list-disc list-inside space-y-1">
             <li>OCR 100% local (confidentialité maximale)</li>
             <li>Aucune limite d'utilisation</li>
