@@ -1,6 +1,6 @@
 'use client';
+import { HelpCircle, Lightbulb, X } from 'lucide-react';
 import { useState } from 'react';
-import { HelpCircle, X, Lightbulb } from 'lucide-react';
 
 export default function HelpModal() {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,7 +24,7 @@ export default function HelpModal() {
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <div className="flex items-center space-x-2">
                 <Lightbulb className="text-yellow-500" size={24} />
-                <h2 className="text-xl font-bold text-gray-800">Guide d'utilisation</h2>
+                <h2 className="text-xl font-bold text-gray-800">Guide d&apos;utilisation</h2>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
@@ -42,10 +42,10 @@ export default function HelpModal() {
                   📄 Traduction de Documents
                 </h3>
                 <div className="space-y-2 text-gray-600">
-                  <p><strong>Étape 1 :</strong> Cliquez sur "Traduction de Documents" dans les onglets</p>
+                  <p><strong>Étape 1 :</strong> Cliquez sur &quot;Traduction de Documents&quot; dans les onglets</p>
                   <p><strong>Étape 2 :</strong> Sélectionnez votre fichier (Word, PDF, TXT...)</p>
-                  <p><strong>Étape 3 :</strong> Cliquez sur "Télécharger le document"</p>
-                  <p><strong>Étape 4 :</strong> Une fois téléchargé, cliquez sur "Lancer la traduction"</p>
+                  <p><strong>Étape 3 :</strong> Cliquez sur &quot;Télécharger le document&quot;</p>
+                  <p><strong>Étape 4 :</strong> Une fois téléchargé, cliquez sur &quot;Lancer la traduction&quot;</p>
                   <p><strong>Étape 5 :</strong> Patientez quelques minutes et téléchargez votre document traduit</p>
                 </div>
               </div>
@@ -53,13 +53,13 @@ export default function HelpModal() {
               {/* Traduction d'images */}
               <div>
                 <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                  📷 Traduction d'Images (OCR)
+                  📷 Traduction d&apos;Images (OCR)
                 </h3>
                 <div className="space-y-2 text-gray-600">
-                  <p><strong>Étape 1 :</strong> Cliquez sur "Traduction d'Images (OCR)" dans les onglets</p>
+                  <p><strong>Étape 1 :</strong> Cliquez sur &quot;Traduction d&apos;Images (OCR)&quot; dans les onglets</p>
                   <p><strong>Étape 2 :</strong> Choisissez votre langue de traduction dans la liste déroulante</p>
-                  <p><strong>Étape 3 :</strong> Cliquez sur "Choisir une image" et sélectionnez votre photo</p>
-                  <p><strong>Étape 4 :</strong> Cliquez sur "Extraire et Traduire le Texte"</p>
+                  <p><strong>Étape 3 :</strong> Cliquez sur &quot;Choisir une image&quot; et sélectionnez votre photo</p>
+                  <p><strong>Étape 4 :</strong> Cliquez sur &quot;Extraire et Traduire le Texte&quot;</p>
                   <p><strong>Étape 5 :</strong> Consultez le texte extrait et sa traduction</p>
                 </div>
               </div>
@@ -72,9 +72,9 @@ export default function HelpModal() {
                 <div className="space-y-2 text-blue-700 text-sm">
                   <p>• <strong>Images :</strong> Utilisez des images nettes avec un texte bien visible</p>
                   <p>• <strong>Éclairage :</strong> Évitez les ombres et reflets sur le texte</p>
-                  <p>• <strong>Contraste :</strong> Privilégiez un bon contraste entre le texte et l'arrière-plan</p>
+                  <p>• <strong>Contraste :</strong> Privilégiez un bon contraste entre le texte et l&apos;arrière-plan</p>
                   <p>• <strong>Résolution :</strong> Les images haute résolution donnent de meilleurs résultats</p>
-                  <p>• <strong>Langues :</strong> L'outil détecte automatiquement la langue source</p>
+                  <p>• <strong>Langues :</strong> L&apos;outil détecte automatiquement la langue source</p>
                 </div>
               </div>
 
@@ -108,7 +108,7 @@ export default function HelpModal() {
                 </h3>
                 <div className="space-y-1 text-yellow-700 text-sm">
                   <p>• Taille maximale des fichiers : 50 MB</p>
-                  <p>• La qualité de l'OCR dépend de la netteté de l'image</p>
+                  <p>• La qualité de l&apos;OCR dépend de la netteté de l&apos;image</p>
                   <p>• Certains caractères spéciaux peuvent ne pas être reconnus</p>
                   <p>• Le traitement peut prendre quelques secondes à quelques minutes</p>
                 </div>

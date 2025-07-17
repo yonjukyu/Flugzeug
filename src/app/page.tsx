@@ -17,7 +17,7 @@ export default function Home() {
 						Flugzeug Translation Hub
 					</h1>
 					<p className="text-xl text-gray-600">
-						Traduisez vos documents et images en temps réel avec l'IA
+						Traduisez vos documents et images en temps réel avec l&apos;IA
 					</p>
 				</div>
 
@@ -45,7 +45,7 @@ export default function Home() {
 							}`}
 						>
 							<Camera size={20} />
-							<span>Traduction d'Images (OCR)</span>
+							<span>Traduction d&apos;Images (OCR)</span>
 						</button>
 					</div>
 				</div>

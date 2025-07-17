@@ -168,7 +168,7 @@ export default function TranslateForm() {
           <div className="m-1 p-4 bg-gray-50 rounded-lg">
             <h3 className="font-medium text-gray-800 mb-2">État du traitement</h3>
             {!filename && (
-              <p className="text-sm text-gray-500">En attente d'un document...</p>
+              <p className="text-sm text-gray-500">En attente d&apos;un document...</p>
             )}
             {filename && !translatedUrl && (
               <p className="text-sm text-blue-600">Document téléchargé: {filename}</p>

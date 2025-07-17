@@ -1,6 +1,6 @@
 'use client';
-import { useState, useRef } from 'react';
-import { Camera, Upload, RefreshCw, Copy, Download } from 'lucide-react';
+import { Camera, Copy, Download, RefreshCw, Upload } from 'lucide-react';
+import { useRef, useState } from 'react';
 
 export default function ImageTranslator() {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -126,7 +126,7 @@ export default function ImageTranslator() {
     <div className="p-6 bg-white rounded-xl shadow-lg space-y-6">
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
-          Traduction d'Images avec OCR
+          Traduction d&apos;Images avec OCR
         </h2>
         <p className="text-gray-600">
           Déposez une image contenant du texte pour la traduire instantanément

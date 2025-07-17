@@ -1,8 +1,8 @@
 'use client';
+import { Cloud, Settings, Zap } from 'lucide-react';
 import { useState } from 'react';
-import ImageTranslatorTesseract from './ImageTranslatorTesseract.js';
 import ImageTranslator from './ImageTranslator.js';
-import { Settings, Zap, Cloud } from 'lucide-react';
+import ImageTranslatorTesseract from './ImageTranslatorTesseract.js';
 
 export default function ImageTranslatorChoice() {
   const [ocrMethod, setOcrMethod] = useState('tesseract'); // 'tesseract' ou 'azure'
@@ -13,7 +13,7 @@ export default function ImageTranslatorChoice() {
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
         <div className="flex items-center space-x-2 mb-3">
           <Settings size={20} className="text-gray-600" />
-          <h3 className="text-lg font-semibold text-gray-800">Méthode d'extraction de texte</h3>
+          <h3 className="text-lg font-semibold text-gray-800">Méthode d&apos;extraction de texte</h3>
         </div>
         
         <div className="grid md:grid-cols-2 gap-4">

@@ -231,7 +231,7 @@ export default function ImageTranslatorTesseract() {
       
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
-          Traduction d'Images avec OCR Local
+          Traduction d&apos;Images avec OCR Local
         </h2>
         <p className="text-gray-600 mb-3">
           Extraction de texte et traduction directement dans votre navigateur
@@ -240,9 +240,9 @@ export default function ImageTranslatorTesseract() {
           <p className="flex font-medium">🚀 Avantages de cette solution :</p>
           <ul className="mt-1 text-left list-disc list-inside space-y-1">
             <li>OCR 100% local (confidentialité maximale)</li>
-            <li>Aucune limite d'utilisation</li>
-            <li>Fonctionne hors ligne pour l'OCR</li>
-            <li>Traitement d'image optimisé automatiquement</li>
+            <li>Aucune limite d&apos;utilisation</li>
+            <li>Fonctionne hors ligne pour l&apos;OCR</li>
+            <li>Traitement d&apos;image optimisé automatiquement</li>
           </ul>
         </div>
       </div>
